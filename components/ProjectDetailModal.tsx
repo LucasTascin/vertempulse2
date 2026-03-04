@@ -164,12 +164,14 @@ export const ProjectDetailModal: React.FC<ProjectDetailModalProps> = ({ project,
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
       className="fixed inset-0 z-[9999] bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 md:p-8"
+      onClick={onClose}
     >
       <motion.div 
         initial={{ scale: 0.95, y: 20 }}
         animate={{ scale: 1, y: 0 }}
         exit={{ scale: 0.95, y: 20 }}
         className="bg-white dark:bg-[#0f1115] w-full max-w-[1400px] h-[90vh] rounded-2xl border border-gray-200 dark:border-white/10 shadow-2xl overflow-hidden flex flex-col md:flex-row relative"
+        onClick={(e) => e.stopPropagation()}
       >
         {/* LEFT PANEL: PROJECT DETAILS */}
         <div className="flex-1 flex flex-col overflow-hidden border-r border-gray-200 dark:border-white/5">
@@ -200,9 +202,6 @@ export const ProjectDetailModal: React.FC<ProjectDetailModalProps> = ({ project,
                   selectedRange={timeRange} 
                   onRangeChange={setTimeRange} 
                 />
-                <button onClick={onClose} className="p-2 hover:bg-gray-200 dark:hover:bg-white/10 rounded-full transition-colors">
-                  <X size={20} className="text-gray-500 dark:text-gray-400" />
-                </button>
               </div>
             </div>
 
@@ -239,7 +238,7 @@ export const ProjectDetailModal: React.FC<ProjectDetailModalProps> = ({ project,
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -10 }}
                 transition={{ duration: 0.2 }}
-                className="h-full"
+                className="min-h-full pb-10"
               >
                 {activeTab === 'overview' && (
                   <div className="space-y-6">
