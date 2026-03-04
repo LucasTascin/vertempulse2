@@ -1,6 +1,5 @@
-import React from 'react';
-import { LineChart, Line, ResponsiveContainer, YAxis } from 'recharts';
-import { clsx } from 'clsx';
+import React, { useRef, useState, useEffect } from 'react';
+import { LineChart, Line, YAxis } from 'recharts';
 
 interface SparklineProps {
   data: number[];
@@ -9,12 +8,38 @@ interface SparklineProps {
 }
 
 export const Sparkline: React.FC<SparklineProps> = ({ data, color, height = 40 }) => {
+  const containerRef = useRef<HTMLDivElement>(null);
+  const [width, setWidth] = useState(0);
+
+  useEffect(() => {
+    if (!containerRef.current) return;
+
+    const updateWidth = () => {
+      if (containerRef.current) {
+        setWidth(containerRef.current.offsetWidth);
+      }
+    };
+
+    // Initial width
+    updateWidth();
+
+    const resizeObserver = new ResizeObserver((entries) => {
+      if (entries[0]) {
+        setWidth(entries[0].contentRect.width);
+      }
+    });
+
+    resizeObserver.observe(containerRef.current);
+
+    return () => resizeObserver.disconnect();
+  }, []);
+
   const chartData = data.map((val, i) => ({ i, val }));
 
   return (
-    <div style={{ height }} className="w-full">
-      <ResponsiveContainer width="100%" height="100%">
-        <LineChart data={chartData}>
+    <div ref={containerRef} style={{ height, width: '100%', position: 'relative' }}>
+      {width > 0 && (
+        <LineChart width={width} height={height} data={chartData}>
           <YAxis domain={['dataMin', 'dataMax']} hide />
           <Line 
             type="monotone" 
@@ -25,7 +50,7 @@ export const Sparkline: React.FC<SparklineProps> = ({ data, color, height = 40 }
             isAnimationActive={true}
           />
         </LineChart>
-      </ResponsiveContainer>
+      )}
     </div>
   );
 };
