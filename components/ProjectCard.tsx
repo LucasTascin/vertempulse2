@@ -20,13 +20,13 @@ const PillarMetric: React.FC<{
   const history = pillar.metrics[0]?.history || [0,0,0,0,0];
   
   return (
-    <div className="flex flex-col gap-1 p-2 rounded-lg bg-white/5 border border-white/5 hover:bg-white/10 transition-colors">
-      <div className="flex justify-between items-center text-[10px] uppercase tracking-wider text-gray-400 font-mono">
+    <div className="flex flex-col gap-1 p-2 rounded-lg bg-gray-50 dark:bg-white/5 border border-gray-100 dark:border-white/5 hover:bg-gray-100 dark:hover:bg-white/10 transition-colors">
+      <div className="flex justify-between items-center text-[10px] uppercase tracking-wider text-gray-500 dark:text-gray-400 font-mono">
         <span>{label}</span>
         <span className={clsx(
           "w-2 h-2 rounded-full",
-          pillar.status === 'critical' ? 'bg-red-500 animate-pulse' :
-          pillar.status === 'warning' ? 'bg-yellow-500' : 'bg-vertem-green'
+          pillar.status === 'critical' ? 'bg-vertem-accent animate-pulse' :
+          pillar.status === 'warning' ? 'bg-yellow-500' : 'bg-vertem-primary'
         )} />
       </div>
       <div className="h-8">
@@ -46,27 +46,35 @@ export const ProjectCard: React.FC<ProjectCardProps> = ({ project, index, onClic
       transition={{ delay: index * 0.1 }}
       onClick={onClick}
       className={clsx(
-        "relative bg-[#1A1D21] rounded-xl border p-5 flex flex-col gap-4 overflow-hidden group cursor-pointer transition-all hover:scale-[1.02]",
-        isCritical ? "border-red-500/30 shadow-[0_0_20px_rgba(239,68,68,0.1)]" : "border-white/10 hover:border-vertem-green/30"
+        "relative bg-white dark:bg-[#1A1D21] rounded-xl border p-5 flex flex-col gap-4 overflow-hidden group cursor-pointer transition-all hover:scale-[1.02] shadow-sm dark:shadow-none",
+        isCritical ? "border-vertem-accent/30 shadow-[0_0_20px_rgba(255,115,106,0.1)]" : "border-gray-200 dark:border-white/10 hover:border-vertem-primary/30"
       )}
     >
       {/* Header */}
       <div className="flex justify-between items-start">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-lg bg-white/5 flex items-center justify-center text-lg font-bold text-white">
+          <div className="w-10 h-10 rounded-lg bg-gray-100 dark:bg-white/5 flex items-center justify-center text-lg font-bold text-gray-900 dark:text-white">
             {project.name.substring(0, 2).toUpperCase()}
           </div>
           <div>
             <div className="flex items-center gap-2">
-              <h3 className="text-white font-medium text-lg leading-tight">{project.name}</h3>
-              <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-white/10 text-gray-400 border border-white/5 whitespace-nowrap flex-shrink-0">
+              <h3 className="text-gray-900 dark:text-white font-medium text-lg leading-tight">{project.name}</h3>
+              <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-gray-100 dark:bg-white/10 text-gray-500 dark:text-gray-400 border border-gray-200 dark:border-white/5 whitespace-nowrap flex-shrink-0">
                 TIER {project.tier}
+              </span>
+              <span className={clsx(
+                "text-[10px] font-mono px-1.5 py-0.5 rounded border whitespace-nowrap flex-shrink-0 uppercase",
+                project.programType === 'incentive' 
+                  ? "bg-purple-500/10 text-purple-500 dark:text-purple-400 border-purple-500/20" 
+                  : "bg-blue-500/10 text-blue-500 dark:text-blue-400 border-blue-500/20"
+              )}>
+                {project.programType}
               </span>
             </div>
             <div className="flex items-center gap-2 mt-1">
               <p className="text-xs text-gray-500 font-mono">Expira em {project.expirationDate}</p>
               {isCritical && (
-                <div className="flex items-center gap-1 px-1.5 py-0.5 rounded bg-red-500/10 border border-red-500/20 text-red-400 text-[10px] font-mono uppercase animate-pulse whitespace-nowrap">
+                <div className="flex items-center gap-1 px-1.5 py-0.5 rounded bg-red-500/10 border border-red-500/20 text-vertem-accent text-[10px] font-mono uppercase animate-pulse whitespace-nowrap">
                   <AlertTriangle size={10} />
                   Crítico
                 </div>
@@ -77,14 +85,14 @@ export const ProjectCard: React.FC<ProjectCardProps> = ({ project, index, onClic
       </div>
 
       {/* Main Stats */}
-      <div className="grid grid-cols-2 gap-4 py-2 border-y border-white/5">
+      <div className="grid grid-cols-2 gap-4 py-2 border-y border-gray-100 dark:border-white/5">
         <div>
           <p className="text-[10px] uppercase tracking-wider text-gray-500 font-mono mb-1">Saldo de Pontos</p>
-          <p className="text-xl font-mono text-vertem-blue">{project.pointsBalance.toLocaleString()}</p>
+          <p className="text-xl font-mono text-vertem-secondary">{project.pointsBalance.toLocaleString()}</p>
         </div>
         <div className="text-right">
           <p className="text-[10px] uppercase tracking-wider text-gray-500 font-mono mb-1">Engajamento</p>
-          <p className={clsx("text-xl font-mono", project.engagementRate > 80 ? "text-vertem-green" : "text-yellow-500")}>
+          <p className={clsx("text-xl font-mono", project.engagementRate > 80 ? "text-vertem-primary" : "text-yellow-500")}>
             {project.engagementRate}%
           </p>
         </div>
@@ -92,8 +100,8 @@ export const ProjectCard: React.FC<ProjectCardProps> = ({ project, index, onClic
 
       {/* Pillars Grid */}
       <div className="grid grid-cols-4 gap-2">
-        <PillarMetric pillar={project.pillars.client} label="Cliente" color="#22d3ee" /> {/* Cyan */}
-        <PillarMetric pillar={project.pillars.team} label="Equipe" color="#34d399" />   {/* Emerald */}
+        <PillarMetric pillar={project.pillars.client} label="Cliente" color="#009dfe" /> {/* New Blue */}
+        <PillarMetric pillar={project.pillars.team} label="Equipe" color="#01d9b0" />   {/* New Teal */}
         <PillarMetric pillar={project.pillars.participant} label="Usuário" color="#a78bfa" /> {/* Purple */}
         <PillarMetric pillar={project.pillars.ai} label="IA" color="#facc15" />       {/* Yellow */}
       </div>
@@ -102,7 +110,7 @@ export const ProjectCard: React.FC<ProjectCardProps> = ({ project, index, onClic
       <div className="mt-auto pt-2">
         <div className="flex items-center justify-between text-xs text-gray-400">
           <span className="font-mono uppercase text-[10px]">Último Status</span>
-          <span className="flex items-center gap-1.5 text-vertem-green">
+          <span className="flex items-center gap-1.5 text-vertem-primary">
             <CheckCircle size={12} />
             {project.actionPlan || "Plano de ação concluído."}
           </span>
@@ -110,7 +118,7 @@ export const ProjectCard: React.FC<ProjectCardProps> = ({ project, index, onClic
       </div>
       
       {/* Hover Glow Effect */}
-      <div className="absolute inset-0 bg-gradient-to-t from-vertem-green/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none" />
+      <div className="absolute inset-0 bg-gradient-to-t from-vertem-primary/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none" />
     </motion.div>
   );
 };
